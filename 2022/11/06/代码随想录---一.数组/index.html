@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="KeleLiu">
+
+
+
+
+
+<title>代码随想录---一.数组 | Hexo</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Keleliu&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Keleliu&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">代码随想录---一.数组</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">KeleLiu</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">November 6, 2022&nbsp;&nbsp;22:23:15</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="第一章-数组"><a href="#第一章-数组" class="headerlink" title="第一章 数组"></a>第一章 数组</h2><p>[toc]<br><font face="Times New Roman" color=black size=3 >文档中列出的是根据自己的思考，再结合<a target="_blank" rel="noopener" href="https://www.programmercarl.com/">代码随想录</a>和<a target="_blank" rel="noopener" href="https://leetcode.com/">LeetCode官网</a>的答案，自己作出的总结。同时在解题过程中会有一些自己的想法和辅助函数都一并列出，LeetCode对应题目链接在各题目处给出，完整的解题代码可访问本人的<a target="_blank" rel="noopener" href="https://github.com/kelearnliu/Cpp-code">GitHub</a>得到. </font></p>
+<h3 id="1-二分查找"><a href="#1-二分查找" class="headerlink" title="1.二分查找"></a><a target="_blank" rel="noopener" href="https://www.programmercarl.com/0704.%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE.html">1.二分查找</a></h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>  就等价于将l+r除以2然后取整，使用的是位运算符<br>使用后面的一种方式的话就不会产生溢出，因为先将l和r加起来的话值可能会很大，只计算差值的话就不会出现这种情况。</p>
+<div align=center>
+<img src=Image/CodeCarl/2022-11-09-12-30-52.png width=480 height=240  />
+</div>
+ <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">// 给定一个 n 个元素有序的（升序）整型数组 nums 和一个目标值 target  ，</span></span><br><span class="line"><span class="comment">//写一个函数搜索 nums 中的 target，如果目标值存在返回下标，否则返回 -1。</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution1</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">search</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> target)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> left = <span class="number">0</span>, right = nums.<span class="built_in">size</span>() - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (left &lt;= right)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="type">int</span> middle = left + (right - left) / <span class="number">2</span>;</span><br><span class="line">            <span class="keyword">if</span> (nums[middle] == target)</span><br><span class="line">                <span class="keyword">return</span> middle;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (target &gt; nums[middle])</span><br><span class="line">            &#123;</span><br><span class="line">                left = middle + <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                right = middle - <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-删除数组中的指定元素"><a href="#2-删除数组中的指定元素" class="headerlink" title="2.删除数组中的指定元素"></a><a target="_blank" rel="noopener" href="https://www.programmercarl.com/0027.%E7%A7%BB%E9%99%A4%E5%85%83%E7%B4%A0.html">2.删除数组中的指定元素</a></h3><ol>
+<li><pre><code>快慢指针 时间O(n)。空间O(1)最多遍历两遍
+</code></pre>
+<p>Vector中的erase函数时间复杂度是O(n),并非是O(1)<br>快慢指针中的快指针用于获得新数组中的元素，慢指针用于更新新数组的index<br>如果快指针指向的值不等于特定元素的值，那么就更新元素，如果相等就不更新</p>
+</li>
+<li><pre><code>首尾指针 时间O(n)。空间O(1)最多遍历一遍 前提是不要求保持数组的顺序
+</code></pre>
+<p>左边指针开始遍历，如果值等于特定元素，那么直接把尾后指针指向的值复制过来<br>最要注意的是，wihle的终止条件，当两个指针相遇时停止，就要带等号</p>
+</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，</span></span><br><span class="line"><span class="comment">// 并返回移除后数组的新长度。</span></span><br><span class="line"><span class="comment">//不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。</span></span><br><span class="line"><span class="comment">//元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution2</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">removeElement</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums, <span class="type">int</span> val)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> right = nums.<span class="built_in">size</span>() - <span class="number">1</span>;</span><br><span class="line">        <span class="type">int</span> left = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (left &lt;= right)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (nums[left] == val)</span><br><span class="line">            &#123;</span><br><span class="line">                nums[left] = nums[right];</span><br><span class="line">                right--;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                left++;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> left;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-有序数组的平方"><a href="#3-有序数组的平方" class="headerlink" title="3.有序数组的平方"></a><a target="_blank" rel="noopener" href="https://www.programmercarl.com/0977.%E6%9C%89%E5%BA%8F%E6%95%B0%E7%BB%84%E7%9A%84%E5%B9%B3%E6%96%B9.html">3.有序数组的平方</a></h3><p>最简单的办法，调用vector的sort函数来对后面的平方数组排序<br>还可以用双指针方法，将最大的值放在新数组的末尾</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//给你一个按 非递减顺序 排序的整数数组 nums，返回 每个数字的平方 组成的新数组，</span></span><br><span class="line"><span class="comment">//要求也按 非递减顺序 排序。</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution3</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">sortedSquares</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="type">int</span> size = nums.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">svec</span><span class="params">(size)</span></span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> left = <span class="number">0</span>, right = size - <span class="number">1</span>; left &lt;= right;)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (nums[left] * nums[left] &gt; nums[right] * nums[right])</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">//这样写出来的代码比size-1，然后再大循环中size--的效率高</span></span><br><span class="line">                svec[--size] = nums[left] * nums[left];</span><br><span class="line">                left++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                svec[--size] = nums[right] * nums[right];</span><br><span class="line">                right--;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> svec;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 方法2 直接用sort函数</span></span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">sortedSquareFunction</span><span class="params">(vector&lt;<span class="type">int</span>&gt;&amp; nums)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        vector&lt;<span class="type">int</span>&gt; ans;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span> num : nums)</span><br><span class="line">        &#123;</span><br><span class="line">            ans.<span class="built_in">push_back</span>(num * num);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 这里要加上头文件algorithm</span></span><br><span class="line">        <span class="built_in">sort</span>(ans.<span class="built_in">begin</span>(), ans.<span class="built_in">end</span>());</span><br><span class="line">        <span class="keyword">return</span> ans;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-长度最小的子数组"><a href="#4-长度最小的子数组" class="headerlink" title="4.长度最小的子数组 "></a><a target="_blank" rel="noopener" href="https://www.programmercarl.com/0209.%E9%95%BF%E5%BA%A6%E6%9C%80%E5%B0%8F%E7%9A%84%E5%AD%90%E6%95%B0%E7%BB%84.html">4.长度最小的子数组 </a></h3><p>C中常量</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INT_MAX和INT_MIN分别表示最大、最小整数，定义在头文件limits.h中。</span><br></pre></td></tr></table></figure>
+<p>由于二进制按原码,补码,反码的规则进行运算,所以要格外注意.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">INT_MAX + <span class="number">1</span> = INT_MIN</span><br><span class="line">INT_MIN - <span class="number">1</span> = INT_MAX</span><br><span class="line"><span class="built_in">abs</span>(INT_MIN) = INT_MIN</span><br></pre></td></tr></table></figure>
+<p>a.滑动窗口求解的过程中，关键在于后面指针的移动和减去指针对应的值。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (sum &gt;= target) &#123;</span><br><span class="line">    subLen = end - start + <span class="number">1</span>;</span><br><span class="line">    <span class="comment">// 取最小字符串长度作为结果</span></span><br><span class="line">    result = result &lt; subLen ? result : subLen;</span><br><span class="line">    sum -= nums[start++];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>b.前缀和+二分查找（这里的二分查找找的不是中间的值，找的是两边的lr）</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//给定一个含有 n 个正整数的数组和一个正整数 target 。</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//找出该数组中满足其和 ≥ target 的长度最小的 连续子数组 </span></span><br><span class="line"><span class="comment">// [numsl, numsl + 1, ..., numsr - 1, numsr] ，并返回其长度。</span></span><br><span class="line"><span class="comment">// 如果不存在符合条件的子数组，返回 0 。</span></span><br><span class="line"><span class="comment">// 输入：target = 7, nums = [2,3,1,2,4,3] </span></span><br><span class="line"><span class="comment">// 输出：2</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution4</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minSubArrayLenBrute</span><span class="params">(<span class="type">int</span> target, vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="type">int</span> result = INT_MAX;</span><br><span class="line">        <span class="type">int</span> sum = <span class="number">0</span>, subLen = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; nums.<span class="built_in">size</span>(); i++)</span><br><span class="line">        &#123;</span><br><span class="line">            sum = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = i; j &lt; nums.<span class="built_in">size</span>(); j++)</span><br><span class="line">            &#123;</span><br><span class="line">                sum += nums[j];</span><br><span class="line">                <span class="keyword">if</span> (sum &gt;= target)</span><br><span class="line">                &#123;</span><br><span class="line">                    subLen = j - i + <span class="number">1</span>;</span><br><span class="line">                    result = result &lt; subLen ? result : subLen;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result == INT_MAX ? <span class="number">0</span> : result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minSubArrayLenWindows</span><span class="params">(<span class="type">int</span> target, vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (nums.<span class="built_in">size</span>() == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> result = INT_MAX;</span><br><span class="line">        <span class="type">int</span> sum = <span class="number">0</span>, subLen = <span class="number">0</span>;</span><br><span class="line">        <span class="type">int</span> start = <span class="number">0</span>, end = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (end &lt; nums.<span class="built_in">size</span>()) &#123;</span><br><span class="line">            sum += nums[end];</span><br><span class="line">            <span class="keyword">while</span> (sum &gt;= target) &#123;</span><br><span class="line">                subLen = end - start + <span class="number">1</span>;</span><br><span class="line">                <span class="comment">// 取最小字符串长度作为结果</span></span><br><span class="line">                result = result &lt; subLen ? result : subLen;</span><br><span class="line">                sum -= nums[start++];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// while中要将指针加一，不断增加sum的值</span></span><br><span class="line">            end++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result == INT_MAX ? <span class="number">0</span> : result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minSubArrayLenDivide</span><span class="params">(<span class="type">int</span> target, vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 数组中的元素都是正数，那么前缀和数组一定是单调递增的</span></span><br><span class="line">        <span class="comment">// 从[j,i]这段区间中，sum[i]- sum[j-1] &gt;= target条件满足时</span></span><br><span class="line">        <span class="comment">// i-j就是长度值， 变换一下形式  sum[i] &gt;= sum[j-1]+target</span></span><br><span class="line">        <span class="type">int</span> n = nums.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">snum</span><span class="params">(n + <span class="number">1</span>)</span></span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            snum[i] = snum[i - <span class="number">1</span>] + nums[i - <span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> ans = INT_MAX;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            <span class="comment">// x表示的是满足条件时，sumu中对应的值</span></span><br><span class="line">            <span class="type">int</span> x = snum[i<span class="number">-1</span>] + target;</span><br><span class="line">            <span class="comment">//lower_bound() 函数用于在指定区域内查找不小于目标值的第一个元素。</span></span><br><span class="line">            <span class="comment">//也就是说，使用该函数在指定范围内查找某个目标值时，</span></span><br><span class="line">            <span class="comment">//最终查找到的不一定是和目标值相等的元素，还可能是比目标值大的元素。</span></span><br><span class="line">            <span class="comment">// 使用的方法是二分查找</span></span><br><span class="line">            <span class="keyword">auto</span> bound = <span class="built_in">lower_bound</span>(snum.<span class="built_in">begin</span>(), snum.<span class="built_in">end</span>(), x);</span><br><span class="line">            <span class="keyword">if</span> (bound != snum.<span class="built_in">end</span>()) &#123;</span><br><span class="line">                ans = <span class="built_in">min</span>(ans, <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;((bound - snum.<span class="built_in">begin</span>()) - (i - <span class="number">1</span>)));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ans == INT_MAX ? <span class="number">0</span> : ans;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="type">int</span> <span class="title">minSubArrayLenMyDivide</span><span class="params">(<span class="type">int</span> target, vector&lt;<span class="type">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 数组中的元素都是正数，那么前缀和数组一定是单调递增的</span></span><br><span class="line">        <span class="comment">// 从[j,i]这段区间中，sum[i]- sum[j-1] &gt;= target条件满足时</span></span><br><span class="line">        <span class="comment">// i-j就是长度值， 变换一下形式  sum[i] &gt;= sum[j-1]+target</span></span><br><span class="line">        <span class="type">int</span> n = nums.<span class="built_in">size</span>();</span><br><span class="line">        <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">snum</span><span class="params">(n + <span class="number">1</span>)</span></span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            snum[i] = snum[i - <span class="number">1</span>] + nums[i - <span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> len = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>; i &lt;= n; i++) &#123;</span><br><span class="line">            <span class="comment">// x表示的是满足条件时，sumu中对应的值</span></span><br><span class="line">            <span class="type">int</span> x = snum[i] - target;</span><br><span class="line">            <span class="type">int</span> l = <span class="number">0</span>, r = i;</span><br><span class="line">            <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">                <span class="type">int</span> middle = (l + r + <span class="number">1</span>) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">if</span> (snum[middle] &lt;= x) l = middle;</span><br><span class="line">                <span class="keyword">else</span> r = middle - <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (snum[l] &gt; x) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">if</span> (!len || i - l &lt; len)</span><br><span class="line">                len = i - l;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> len;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="5-螺旋矩阵"><a href="#5-螺旋矩阵" class="headerlink" title="5.螺旋矩阵"></a><a target="_blank" rel="noopener" href="https://www.programmercarl.com/0059.%E8%9E%BA%E6%97%8B%E7%9F%A9%E9%98%B5II.html">5.螺旋矩阵</a></h3><p>设定4种模式来生成矩阵，四个边界，行列条件
+ </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//给你一个正整数 n ，生成一个包含 1 到 n2 所有元素，</span></span><br><span class="line"><span class="comment">//且元素按顺时针顺序螺旋排列的 n x n 正方形矩阵 matrix 。</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Solution5</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">generateMatrix</span>(<span class="type">int</span> n) &#123;</span><br><span class="line">        vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; <span class="built_in">nums</span>(n, <span class="built_in">vector</span>&lt;<span class="type">int</span>&gt;(n));</span><br><span class="line">        <span class="type">int</span> bound_x_up = <span class="number">0</span>, bound_x_down = n - <span class="number">1</span>, bound_y_left = <span class="number">0</span>, bound_y_right = n - <span class="number">1</span>, val = <span class="number">1</span>;</span><br><span class="line">        <span class="comment">// location确定是在行还是列，行为1 列为0</span></span><br><span class="line">        <span class="type">bool</span> location = <span class="number">1</span>, start_left = <span class="number">1</span>, start_right = <span class="number">0</span>, start_up = <span class="number">0</span>, start_down = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (bound_x_up &lt;= bound_x_down &amp;&amp; bound_y_left &lt;= bound_y_right) &#123;</span><br><span class="line">            <span class="keyword">if</span> (location &amp;&amp; start_left)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> i = bound_y_left; i &lt;= bound_y_right; i++)</span><br><span class="line">                &#123;</span><br><span class="line">                    nums[bound_x_up][i] = val;</span><br><span class="line">                    val++;</span><br><span class="line">                    cout &lt;&lt; <span class="string">&quot;writing&quot;</span> &lt;&lt; bound_x_up &lt;&lt; <span class="string">&quot;-&quot;</span> &lt;&lt; i &lt;&lt; endl;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 边界缩小</span></span><br><span class="line">                bound_x_up++;</span><br><span class="line">                <span class="comment">// 左向完毕，标志符设为0</span></span><br><span class="line">                start_left = <span class="number">0</span>;</span><br><span class="line">                start_up = <span class="number">0</span>;</span><br><span class="line">                start_right = <span class="number">0</span>;</span><br><span class="line">                <span class="comment">//方向向下，标志符设为1</span></span><br><span class="line">                start_down = <span class="number">1</span>;</span><br><span class="line">                <span class="comment">// 变为列，标志符设为0</span></span><br><span class="line">                location = <span class="number">0</span>;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_x_up:&quot;</span> &lt;&lt; bound_x_up &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_x_down:&quot;</span> &lt;&lt; bound_x_down &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_y_left:&quot;</span> &lt;&lt; bound_y_left &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_y_right:&quot;</span> &lt;&lt; bound_y_right &lt;&lt; endl;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!location &amp;&amp; start_down)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> i = bound_x_up; i &lt;= bound_x_down; i++)</span><br><span class="line">                &#123;</span><br><span class="line">                    nums[i][bound_y_right] = val;</span><br><span class="line">                    val++;</span><br><span class="line">                    cout &lt;&lt; <span class="string">&quot;writing&quot;</span> &lt;&lt; i &lt;&lt; <span class="string">&quot;-&quot;</span> &lt;&lt; bound_y_right &lt;&lt; endl;</span><br><span class="line">                &#125;</span><br><span class="line">                bound_y_right--;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_x_up:&quot;</span> &lt;&lt; bound_x_up &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_x_down:&quot;</span> &lt;&lt; bound_x_down &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_y_left:&quot;</span> &lt;&lt; bound_y_left &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_y_right:&quot;</span> &lt;&lt; bound_y_right &lt;&lt; endl;</span><br><span class="line">                start_right = <span class="number">1</span>;</span><br><span class="line">                start_left = <span class="number">0</span>;</span><br><span class="line">                start_up = <span class="number">0</span>;</span><br><span class="line">                start_down = <span class="number">0</span>;</span><br><span class="line">                location = <span class="number">1</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (location &amp;&amp; start_right)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> i = bound_y_right; i &gt;= bound_y_left; i--)</span><br><span class="line">                &#123;</span><br><span class="line">                    nums[bound_x_down][i] = val;</span><br><span class="line">                    val++;</span><br><span class="line">                    cout &lt;&lt; <span class="string">&quot;writing&quot;</span> &lt;&lt; bound_x_down &lt;&lt; <span class="string">&quot;-&quot;</span> &lt;&lt; i &lt;&lt; endl;</span><br><span class="line">                &#125;</span><br><span class="line">                bound_x_down--;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_x_up:&quot;</span> &lt;&lt; bound_x_up &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_x_down:&quot;</span> &lt;&lt; bound_x_down &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_y_left:&quot;</span> &lt;&lt; bound_y_left &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_y_right:&quot;</span> &lt;&lt; bound_y_right &lt;&lt; endl;</span><br><span class="line">                location = <span class="number">0</span>;</span><br><span class="line">                start_up = <span class="number">1</span>;</span><br><span class="line">                start_down = <span class="number">0</span>;</span><br><span class="line">                start_left = <span class="number">0</span>;</span><br><span class="line">                start_right = <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!location &amp;&amp; start_up)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> i = bound_x_down; i &gt;= bound_x_up; i--)</span><br><span class="line">                &#123;</span><br><span class="line">                    nums[i][bound_y_left] = val;</span><br><span class="line">                    val++;</span><br><span class="line">                    cout &lt;&lt; <span class="string">&quot;writing&quot;</span> &lt;&lt; i &lt;&lt; <span class="string">&quot;-&quot;</span> &lt;&lt; bound_y_left &lt;&lt; endl;</span><br><span class="line">                &#125;</span><br><span class="line">                bound_y_left++;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_x_up:&quot;</span> &lt;&lt; bound_x_up &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_x_down:&quot;</span> &lt;&lt; bound_x_down &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_y_left:&quot;</span> &lt;&lt; bound_y_left &lt;&lt; endl;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;bound_y_right:&quot;</span> &lt;&lt; bound_y_right &lt;&lt; endl;</span><br><span class="line">                location = <span class="number">1</span>;</span><br><span class="line">                start_left = <span class="number">1</span>;</span><br><span class="line">                start_right = <span class="number">0</span>;</span><br><span class="line">                start_up = <span class="number">0</span>;</span><br><span class="line">                start_down = <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line"> </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> nums;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="6-代码的其他部分"><a href="#6-代码的其他部分" class="headerlink" title="6. 代码的其他部分"></a>6. 代码的其他部分</h3><p>头文件</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;algorithm&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br></pre></td></tr></table></figure>
+<p>函数</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">// 输出vector中的元素</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">printArray</span><span class="params">(vector&lt;<span class="type">int</span>&gt; nums)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> i : nums)</span><br><span class="line">        cout &lt;&lt; i &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">p1_1</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//1.二分法</span></span><br><span class="line">    vector&lt;<span class="type">int</span>&gt;nums = &#123; <span class="number">-1</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">9</span>, <span class="number">12</span> &#125;;</span><br><span class="line">    <span class="type">int</span> target = <span class="number">9</span>;</span><br><span class="line">    Solution1 s1;</span><br><span class="line">    <span class="type">int</span> res = s1.<span class="built_in">search</span>(nums, target);</span><br><span class="line">    cout &lt;&lt; res &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">p1_2</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//2.删除特定元素</span></span><br><span class="line">    vector&lt;<span class="type">int</span>&gt;  nums = &#123; <span class="number">3</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span> &#125;;</span><br><span class="line">    <span class="type">int</span> val = <span class="number">3</span>;</span><br><span class="line">    Solution2 s2;</span><br><span class="line">    <span class="type">int</span> number = s2.<span class="built_in">removeElement</span>(nums, val);</span><br><span class="line">    cout &lt;&lt; number &lt;&lt; endl;</span><br><span class="line">    <span class="built_in">printArray</span>(nums);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">p1_3</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//3.平方和排序</span></span><br><span class="line">    vector&lt;<span class="type">int</span>&gt;  nums = &#123; <span class="number">-4</span>, <span class="number">-1</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">10</span>, <span class="number">33</span>,<span class="number">44</span> &#125;;</span><br><span class="line">    <span class="function">vector&lt;<span class="type">int</span>&gt; <span class="title">ans</span><span class="params">(nums.size())</span></span>;</span><br><span class="line">    Solution3 s3;</span><br><span class="line">    ans = s3.<span class="built_in">sortedSquares</span>(nums);</span><br><span class="line">    <span class="built_in">printArray</span>(ans);</span><br><span class="line">    <span class="built_in">printArray</span>(s3.<span class="built_in">sortedSquareFunction</span>(nums));</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">p1_4</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//4.长度最小子数组</span></span><br><span class="line">    vector&lt;<span class="type">int</span>&gt;  nums = &#123; <span class="number">2</span>,<span class="number">3</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">3</span> &#125;;</span><br><span class="line">    <span class="type">int</span> target = <span class="number">7</span>;</span><br><span class="line">    Solution4 s4;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// O(n2)</span></span><br><span class="line">    <span class="type">int</span> res = s4.<span class="built_in">minSubArrayLenBrute</span>(target, nums);</span><br><span class="line">    cout &lt;&lt; res &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 滑动窗口 O(n)</span></span><br><span class="line">    cout &lt;&lt; s4.<span class="built_in">minSubArrayLenWindows</span>(target, nums) &lt;&lt; endl;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// O(nlog(n))</span></span><br><span class="line">    cout &lt;&lt; s4.<span class="built_in">minSubArrayLenDivide</span>(target, nums) &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line">    cout &lt;&lt; s4.<span class="built_in">minSubArrayLenMyDivide</span>(target, nums) &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">p1_5</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> n = <span class="number">5</span>;</span><br><span class="line">    <span class="comment">//vector&lt;vector&lt;int&gt;&gt; nums = &#123;&#123;1,2,3&#125;,&#123;8,9,4&#125;,&#123;7,6,5&#125;&#125;;</span></span><br><span class="line">    Solution5 s5;</span><br><span class="line">    vector&lt;vector&lt;<span class="type">int</span>&gt;&gt; res = s5.<span class="built_in">generateMatrix</span>(n);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> i : res)</span><br><span class="line">        <span class="built_in">printArray</span>(i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//1_1.二分法</span></span><br><span class="line">    <span class="comment">//p1_1();</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//1_2.删除特定元素</span></span><br><span class="line">    <span class="comment">//p1_2();</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//1_3.平方和排序</span></span><br><span class="line">    <span class="comment">//p1_3();</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//1_4.长度最小子数组</span></span><br><span class="line">    <span class="comment">//p1_4();</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//1_5.螺旋矩阵</span></span><br><span class="line">    <span class="comment">//p1_5();</span></span><br><span class="line"></span><br><span class="line">	<span class="built_in">system</span>(<span class="string">&quot;pause&quot;</span>);</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>KeleLiu</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/C-LeetCode/"># C++, LeetCode</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/11/09/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95---%E4%BA%8C.%E9%93%BE%E8%A1%A8/">代码随想录---二.链表</a>
+            
+            
+            <a class="next" rel="next" href="/2022/11/05/%E6%96%B9%E6%B3%95/">Markdown使用指南</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© KeleLiu | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
