@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="KeleLiu">
+
+
+
+
+
+<title>Hexo</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Keleliu&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Keleliu&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title"></h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">KeleLiu</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">April 14, 2023&nbsp;&nbsp;21:45:24</a>
+                        </span>
+                    
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>title: CMake教程<br>date: 2023-04-14 21:44:34<br>tags: C++<br>category: 机器人</p>
+<h1 id="CMake教程"><a href="#CMake教程" class="headerlink" title="CMake教程"></a>CMake教程</h1><h2 id="1-Linux文件目录及重要指令"><a href="#1-Linux文件目录及重要指令" class="headerlink" title="1.Linux文件目录及重要指令"></a>1.Linux文件目录及重要指令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">Linux 多用户多任务 一切皆文件</span><br><span class="line">Bin 存储可执行的二进制文件</span><br><span class="line">Dev 存放外界设备</span><br><span class="line">Etc 存储配置文件</span><br><span class="line">Home 除Root用户外其他用户的家目录</span><br><span class="line">Proc 表示linux运行时候的进程</span><br><span class="line">Root root用户自己的家目录</span><br><span class="line">Sbin super binary 有super权限的用户才能执行的二进制文集那</span><br><span class="line">Tmp 系统运行时产生的临时文件</span><br><span class="line">Usr 存放用户自己安装的软件</span><br><span class="line">Var 存放的程序/系统的日志文件的目录</span><br><span class="line">Mnt 外界设备挂载的目录</span><br><span class="line"></span><br><span class="line"><span class="built_in">pwd</span>：<span class="built_in">print</span> current working directory 打印当前目录</span><br><span class="line"><span class="built_in">ls</span>: list  directory contents 列出所有的文件夹和文件名称</span><br><span class="line">	<span class="built_in">ls</span> [path] 	</span><br><span class="line">	<span class="built_in">ls</span> -lah (l 以详细列表方式展示 a所有的文件 h可读性较高的形式)</span><br><span class="line">	显示出来的列表中  d开头的是文件夹  -开头的是文件</span><br><span class="line"><span class="built_in">cd</span>:change directory 切换当前的工作目录  </span><br><span class="line">	<span class="built_in">cd</span> ~ / <span class="built_in">cd</span> 是直接进入用户的家目录</span><br><span class="line"><span class="built_in">mkdir</span>: make directory  </span><br><span class="line">	<span class="built_in">mkdir</span> folder 创建出目录</span><br><span class="line">	<span class="built_in">mkdir</span> -p a/b/c 一次性创建多层不存在的目录</span><br><span class="line">	<span class="built_in">mkdir</span> a b c 一次性创建多个目录</span><br><span class="line"><span class="built_in">touch</span>: 创建文件 </span><br><span class="line"><span class="built_in">rm</span>：remove files or directories </span><br><span class="line">	<span class="built_in">rm</span> file01 删除当前路径下的文件</span><br><span class="line">	<span class="built_in">rm</span> -rf folder  删除路径下的文件夹</span><br><span class="line">	</span><br><span class="line">sudo: switch user root</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">编译器调试器的安装：安装GCC和GDB</span><br><span class="line">sudo apt update</span><br><span class="line">sudo apt install build-essential gdb		//相当于全部将gcc g++ 和 gdb全部安装完成了</span><br><span class="line"></span><br><span class="line">查看版本： xxx --version</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-使用cmake"><a href="#2-使用cmake" class="headerlink" title="2.使用cmake"></a>2.使用cmake</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install cmake</span><br><span class="line">编译过程：预处理——编译——汇编——链接</span><br><span class="line">预处理：g++ -E test.cpp -o test.i  //cpp---i</span><br><span class="line">编译：g++ -S test.i -o test.s	//i---s</span><br><span class="line">汇编：g++ -C test.s -o test.o	//s---o</span><br><span class="line">链接：g++ test.o -o <span class="built_in">test</span> 	//o---bin可执行文件</span><br><span class="line">一条指令也能够完成编译：g++ test.cpp -o <span class="built_in">test</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>g++重要编译参数：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">1.-g 编译带i调试信息的可执行文件</span><br><span class="line">g++ -g test.cpp -o <span class="built_in">test</span></span><br><span class="line"></span><br><span class="line">2.-O[n]优化源代码</span><br><span class="line"> -O2可以优化源代码 time ./test.cpp 可以得到代码运行的时间</span><br><span class="line"></span><br><span class="line">3.-l和-L 指定库文件 | 指定库文件路径（在/lib和/usr//local/lib中的可以直接用-l链接，如果不在，需要添加-L指定库的位置）</span><br><span class="line"></span><br><span class="line">4.-I 指定头文件搜索目录</span><br><span class="line"></span><br><span class="line">5.-Wall 打印警告信息</span><br><span class="line"></span><br><span class="line">6.-w 关闭警告信息</span><br><span class="line">7.-std=c++11 设置编译标准</span><br><span class="line">8.-o 指定输出的文件名，默认是a.out</span><br><span class="line">9.-D 编译时使用宏</span><br><span class="line">man gcc 可以查看gcc英文使用手册</span><br></pre></td></tr></table></figure>
+
+<p>直接编译： </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">g++ main.cpp src/swap.cpp -Iinclude</span><br><span class="line">(当前文件有main.cpp src中是swap.cpp 头文件是include中的swap.h)</span><br><span class="line">include</span><br><span class="line">--swap.h</span><br><span class="line">src</span><br><span class="line">--swap.cpp</span><br><span class="line">main.cpp</span><br></pre></td></tr></table></figure>
+
+<p>生成库文件并编译(ll 可以查看文件的具体大小)</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">1.生成静态库</span><br><span class="line">	<span class="built_in">cd</span> src</span><br><span class="line">	汇编，生成.o文件</span><br><span class="line">	g++ swap.cpp -c -I../include</span><br><span class="line">	生成静态库libswap.a</span><br><span class="line">	ar rs libswap.a swap.o</span><br><span class="line">	<span class="built_in">cd</span> ..</span><br><span class="line">	链接，生成可执行文件 static_main</span><br><span class="line">	g++ main.cpp -Iinclude -Lsrc  -lswap -o static_main</span><br><span class="line">2.生成动态库</span><br><span class="line">	<span class="built_in">cd</span> src</span><br><span class="line">	g++ swap.cpp -I../include -fPIC -shared -o libswap.so</span><br><span class="line">	(等价于 gcc swap.cpp -I../include -c -fPIC,gcc -shared -o libswap.so swap.o)</span><br><span class="line">	<span class="built_in">cd</span> ..</span><br><span class="line">	g++ main.cpp -Iinclude -Lsrc -lswap -o shared_main</span><br><span class="line">生成动态库之后运行时要添加搜索路径：LD_LIBRARY_PATH=src ./shared_main</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-GDB调试器"><a href="#3-GDB调试器" class="headerlink" title="3.GDB调试器"></a>3.GDB调试器</h2><p>​	GNU Debugger调试C&#x2F;C++程序<br>​	设置断点；<br>​	使程序在指定代码行上暂停执行，便于观察<br>​	单步执行程序，便于调试<br>​	查看程序中变量值的变化<br>​	动态改变程序的执行环境<br>​	分析崩溃程序产生的core文件<br> 编译时需要加上 -g 之后才能用GDB调试， gcc -g main.c -o main</p>
+<h2 id="4-重要指令"><a href="#4-重要指令" class="headerlink" title="4.重要指令"></a>4.重要指令</h2><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">基本语法：参数用括弧括起；参数之间用空格或分号分开</span><br><span class="line">指令大小写无关，参数和变量是大小写有关</span><br><span class="line">变量使用\<span class="variable">$&#123;&#125;</span>方式取值，<span class="keyword">if</span>中直接写变量名</span><br><span class="line"><span class="keyword">set</span>(HELLO hello.cpp)</span><br><span class="line"><span class="keyword">add_executable</span>(hello main.cpp <span class="variable">$&#123;HELLO&#125;</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>.cmake的版本</span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">2.8</span>.<span class="number">3</span>)</span><br><span class="line"><span class="number">2</span>.<span class="keyword">project</span>:定义工程名称，并可指定工程支持的语言</span><br><span class="line"><span class="keyword">project</span>(HELLOWORLD)</span><br><span class="line"><span class="number">3</span>.<span class="keyword">set</span> 显示的定义变量</span><br><span class="line"><span class="keyword">set</span>(SRC say.cpp hello.cpp)  将say.cpp hello.cpp定义为SRC</span><br><span class="line"><span class="number">4</span>.<span class="keyword">include_directories</span> 向工程添加多个特定的头文件搜索路径</span><br><span class="line"><span class="keyword">include_directories</span>(/usr/bin/ ./<span class="keyword">include</span>) 将这两个路径全部添加到头文件搜索路径</span><br><span class="line">相当于g++的-I</span><br><span class="line"><span class="number">5</span>.<span class="keyword">link_directories</span> 向工程添加多个特定的库文件搜索路径</span><br><span class="line"><span class="keyword">link_directories</span>(/usr/bin ./bin)</span><br><span class="line">相当于-L</span><br><span class="line"><span class="number">6</span>.<span class="keyword">add_library</span>	生成库文件</span><br><span class="line"><span class="keyword">add_library</span>(hello SHARED <span class="variable">$&#123;SRC&#125;</span>)	通过变量SRC生成libhello.so共享库</span><br><span class="line"><span class="number">7</span>.add_complie_options 添加编译参数</span><br><span class="line">add_complie_options(-wall -std=c++<span class="number">11</span> -o2)</span><br><span class="line"><span class="number">8</span>.<span class="keyword">add_executable</span> 生成可执行文件</span><br><span class="line"><span class="keyword">add_executable</span>(main main.cpp) 把main.cpp编译成为main的可执行文件</span><br><span class="line"><span class="number">9</span>.<span class="keyword">target_link_libraries</span> 为<span class="keyword">target</span>添加需要链接的共享库</span><br><span class="line"><span class="keyword">target_link_libraries</span>(main hello)	将hello动态库文件连接到可执行文集那main</span><br><span class="line"><span class="number">10</span>.<span class="keyword">add_subdirectory</span> 向当前工程添加存放源文件的子目录，并且可以指定中间二进制和目标二进制存放的位置</span><br><span class="line"><span class="keyword">add_subdirectory</span>(src) 添加src子目录，src中需要有一个CMakelists.txt</span><br><span class="line"><span class="number">11</span>.<span class="keyword">aux_source_directory</span> 发现一个目录下所有的源代码文件并将列表存储在一个变量中，这个指令临时被用来自动构建源文件列表</span><br><span class="line"><span class="keyword">aux_source_directory</span>(. SRC) 	SRC代表当前所有的cpp文件</span><br><span class="line"><span class="keyword">aux_source_directory</span>(main <span class="variable">$&#123;SRC&#125;</span>)	 编译SRC变量所代表的源文件代码，生成main可执行文件</span><br></pre></td></tr></table></figure>
+
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>KeleLiu</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2023/03/06/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95---%E4%B8%83.%E5%9B%9E%E6%BA%AF/">代码随想录---七.回溯</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© KeleLiu | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

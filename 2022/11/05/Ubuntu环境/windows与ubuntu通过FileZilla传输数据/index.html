@@ -13,7 +13,7 @@
 
 
 
-<title>Hello World | Hexo</title>
+<title>windows与ubuntu通过FileZilla传输数据 | Hexo</title>
 
 
 
@@ -229,7 +229,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">Hello World</h1>
+            <h1 class="post-title">windows与ubuntu通过FileZilla传输数据</h1>
             
                 <div class="post-meta">
                     
@@ -238,28 +238,35 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">November 4, 2022&nbsp;&nbsp;12:45:43</a>
+                        Date: <a href="#">November 5, 2022&nbsp;&nbsp;14:52:45</a>
                         </span>
                     
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Ubuntu%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/">Ubuntu系统相关问题</a>
+                            
+                        </span>
                     
                 </div>
             
         </header>
 
         <div class="post-content">
-            <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+            <p>原载于我的CSDN博客：<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39772704/article/details/121553604">https://blog.csdn.net/weixin_39772704/article/details/121553604</a></p>
+<h2 id="程序如下"><a href="#程序如下" class="headerlink" title="程序如下"></a>程序如下</h2><p>一 . 在Ubuntu下<br>1.通过命令</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 查看防火墙开启状况</span></span><br><span class="line">sudo ufw status </span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>查看防火墙的状态，active为开启状态，inactive为关闭状态。</p>
+<p>2.Ubuntu上安装ssh-server</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 安装openssh</span></span><br><span class="line">sudo apt install openssh-server</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>3.查看虚拟机的ip地址</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 查看网络地址等信息</span></span><br><span class="line">ifconfig</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<p>二. 在Windows下<br><img src="https://img-blog.csdnimg.cn/0ffda92f86c046779c4ce650d96d70fe.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5Zu95bCP5aSp,size_20,color_FFFFFF,t_70,g_se,x_16" alt="在这里插入图片描述"><br>创建新的站点，然后将虚拟机中的主机地址填入主机选项，将协议改为SFTP，并且输入用户名及密码。</p>
+<p><img src="https://img-blog.csdnimg.cn/5345cac3d4e3403886216ed7a65c7d0e.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA5Zu95bCP5aSp,size_20,color_FFFFFF,t_70,g_se,x_16" alt="按照要求输入即可"></p>
 
         </div>
 
@@ -287,6 +294,10 @@
                 <span>Tag(s):</span>
                 <span class="tag">
                     
+                    
+                        <a href="/tags/Ubunutu/"># Ubunutu</a>
+                    
+                        
                 </span>
             </div>
             <div>
@@ -297,8 +308,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2022/11/05/Ubuntu%E7%8E%AF%E5%A2%83/windows%E4%B8%8Eubuntu%E9%80%9A%E8%BF%87FileZilla%E4%BC%A0%E8%BE%93%E6%95%B0%E6%8D%AE/">windows与ubuntu通过FileZilla传输数据</a>
+                <a class="prev" rel="prev" href="/2022/11/05/Ubuntu%E7%8E%AF%E5%A2%83/Ubuntu%E7%B3%BB%E7%BB%9F%E4%B8%8BCUDA%E5%8F%8AcuDNN%E5%AE%89%E8%A3%85%E6%96%B9%E6%B3%95/">Ubuntu系统下CUDA及cuDNN安装方法</a>
             
+            
+            <a class="next" rel="next" href="/2022/11/04/hello-world/">Hello World</a>
             
         </section>
 
