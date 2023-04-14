@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="KeleLiu">
+
+
+
+
+
+<title>ROS基础 | Hexo</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+    
+
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Keleliu&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Keleliu&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/archives">Posts</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">ROS基础</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">KeleLiu</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">March 6, 2023&nbsp;&nbsp;20:21:56</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h1 id="1-Linux基础"><a href="#1-Linux基础" class="headerlink" title="1 Linux基础"></a>1 Linux基础</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">rm file 删除某一个文件</span><br><span class="line">rm -r folder/	递归删除目录下的文件</span><br><span class="line">cp file folder/</span><br><span class="line">mv file folder/</span><br><span class="line">sudo apt-get update 更新软件列表</span><br></pre></td></tr></table></figure>
+
+<h1 id="2-安装ROS"><a href="#2-安装ROS" class="headerlink" title="2 安装ROS"></a>2 安装ROS</h1><h2 id="2-1-添加ROS软件源"><a href="#2-1-添加ROS软件源" class="headerlink" title="2.1 添加ROS软件源"></a>2.1 添加ROS软件源</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo sh -c &#x27;echo &quot;deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main&quot; &gt; /etc/apt/sources.list.d/ros-latest.list&#x27;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-2-设置密钥"><a href="#2-2-设置密钥" class="headerlink" title="2.2 设置密钥"></a>2.2 设置密钥</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F42ED6FBAB17C654</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3-安装"><a href="#2-3-安装" class="headerlink" title="2.3 安装"></a>2.3 安装</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt install ros-melodic-desktop-full </span><br><span class="line">sudo apt-get install ros-melodic-rqt*</span><br></pre></td></tr></table></figure>
+
+<p>如果是20.04版本，找不到melodic，要换成noetic。版本的对应关系如下图，一些问题可以参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/chenxinyun921/article/details/122578988">https://blog.csdn.net/chenxinyun921/article/details/122578988</a></p>
+<p><img src="/.%5CImage%5Cimage-20230322130145704.png" alt="image-20230322130145704"></p>
+<h2 id="2-4-初始化rosdep"><a href="#2-4-初始化rosdep" class="headerlink" title="2.4 初始化rosdep"></a>2.4 初始化rosdep</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">sudo rosdep init</span><br><span class="line">// 如果提示找不到命令</span><br><span class="line">&#123;</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo apt install python-rosdep2</span></span><br><span class="line">//ERROR: cannot download default sources list from:</span><br><span class="line">https://raw.githubusercontent.com/ros/rosdistro/master/rosdep/sources.list.d/20-default.list</span><br><span class="line">Website may be down.</span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">sudo apt-get install python-rosdep python-wstool ros-melodic-ros</span></span><br><span class="line"></span><br><span class="line">（根据自己实际的ROS版本确定中间的名字）</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">rosdep update</span><br></pre></td></tr></table></figure>
+
+<p>这两句报错的时候，可以查看这个链接的文章</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Twilightzr/article/details/121714894?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166695829516782427488512%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=166695829516782427488512&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-2-121714894-null-null.142%5Ev62%5Epc_search_tree,201%5Ev3%5Econtrol_2,213%5Ev1%5Econtrol&utm_term=ERROR:%20Rosdep%20experienced%20an%20error:%20(The%20read%20operation%20timed%20out,)%20Please%20go%20to%20the%20rosdep%20page%20%5B1%5D%20and%20file%20a%20bug%20report%20with%20the%20stack%20trace%20below.&spm=1018.2226.3001.4187">2.4的疑难杂症</a></p>
+<p><img src="/.%5CImage%5Cimage-20230322131027202.png" alt="image-20230322131027202"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">原因：python-rosdep这个包没有装。</span><br><span class="line">sudo apt-get install python-rosdep</span><br></pre></td></tr></table></figure>
+
+<p>有时因为下载不了一些文件，可以直接自己下载</p>
+<p>下载了ros的包，直接把rosdep复制到&#x2F;etc&#x2F;ros中去，就可以了。使用的指令是移动文件夹。不使用代理，直接替换。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44023934/article/details/121242176">https://blog.csdn.net/weixin_44023934&#x2F;article&#x2F;details&#x2F;121242176</a></p>
+<h2 id="2-5-设置环境变量"><a href="#2-5-设置环境变量" class="headerlink" title="2.5 设置环境变量"></a>2.5 设置环境变量</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">设置环境变量</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;source /opt/ros/melodic/setup.bash&quot;</span> &gt;&gt; ~/.bashrc</span><br><span class="line">让环境变量生效，输入ros会有相关的指令</span><br><span class="line"><span class="built_in">source</span> ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-6-安装一些ROS的依赖包"><a href="#2-6-安装一些ROS的依赖包" class="headerlink" title="2.6 安装一些ROS的依赖包"></a>2.6 安装一些ROS的依赖包</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install python-rosinstall python-rosinstall-generator python-wstool build-essential</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-7-测试"><a href="#2-7-测试" class="headerlink" title="2.7 测试"></a>2.7 测试</h2><p>开启三个终端，再用方向键控制</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">roscore</span><br><span class="line">rosrun turtlesim turtlesim_node</span><br><span class="line">rosrun turtlesim turtle_teleop_key</span><br></pre></td></tr></table></figure>
+
+<h1 id="3-ROS是什么"><a href="#3-ROS是什么" class="headerlink" title="3.ROS是什么"></a>3.ROS是什么</h1><p><img src="/.%5CImage%5Cimage-20230326124322103.png" alt="image-20230326124322103"></p>
+<p>提高研发中的软件复用率。</p>
+<h1 id="4-ROS核心概念"><a href="#4-ROS核心概念" class="headerlink" title="4.ROS核心概念"></a>4.ROS核心概念</h1><p>节点名称唯一，执行具体任务，不同节点可以使用不同的编程语言。</p>
+<p>节点管理器可以管理节点，建立node之间的连接，提供参数服务器。</p>
+<p><img src="/.%5CImage%5Cimage-20230326125105402.png" alt="image-20230326125105402"></p>
+<p>通信：话题和消息</p>
+<p><strong>Topic</strong>：异步通信机制 </p>
+<p><strong>Message</strong>：话题数据</p>
+<p>publisher，subscriber发布者和订阅者，都是节点</p>
+<p>发布的消息是message，通过.msg自定义</p>
+<p><img src="/.%5CImage%5Cimage-20230326125348081.png" alt="image-20230326125348081"></p>
+<p><strong>Service</strong>，同步通信机制</p>
+<p>客户端发送请求数据，服务器完成处理后返回应答数据。使用.srv文件定义请求和应答数据结构。</p>
+<p><img src="/.%5CImage%5Cimage-20230326125615800.png" alt="image-20230326125615800"></p>
+<p><strong>Parameter</strong>:全局共享字典，用来存储系统中静态非二进制不会频繁改变的参数。</p>
+<p><img src="/.%5CImage%5Cimage-20230326130039809.png" alt="image-20230326130039809"></p>
+<p><strong>Package，Package manifest, Meta Packages</strong></p>
+<p><img src="/.%5CImage%5Cimage-20230326130231169.png" alt="image-20230326130231169"></p>
+<h1 id="5-ROS命令行工具"><a href="#5-ROS命令行工具" class="headerlink" title="5.ROS命令行工具"></a>5.ROS命令行工具</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">rostopic</span><br><span class="line">rosservice</span><br><span class="line">rosnode</span><br><span class="line">rosparam</span><br><span class="line">rosmsg</span><br><span class="line">rossrv</span><br><span class="line">rosrun</span><br><span class="line">rqt_graph 显示系统计算图</span><br></pre></td></tr></table></figure>
+
+<p>以turtlesim为例，使用rqt_graph显示节点关系</p>
+<p><img src="/.%5CImage%5Cimage-20230326130938471.png" alt="image-20230326130938471"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rosnode list 列出node</span><br><span class="line">rosnode info ./turtlrsim </span><br><span class="line">rostopic list 当前所有的话题列表</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230326131557303.png" alt="image-20230326131557303"></p>
+<p>设置速度，海龟撞墙。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"> rostopic pub -r 10  /turtle1/cmd_vel geometry_msgs/Twist <span class="string">&quot;linear:</span></span><br><span class="line"><span class="string">  x: 1.0</span></span><br><span class="line"><span class="string">  y: 0.0</span></span><br><span class="line"><span class="string">  z: 0.0</span></span><br><span class="line"><span class="string">angular:</span></span><br><span class="line"><span class="string">  x: 0.0</span></span><br><span class="line"><span class="string">  y: 0.0</span></span><br><span class="line"><span class="string">  z: 0.0&quot;</span> </span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230326131702878.png" alt="image-20230326131702878"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosservice list</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230326131743369.png" alt="image-20230326131743369"></p>
+<p>新建了一个turtle2</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rosservice call /spawn <span class="string">&quot;x: 2.0</span></span><br><span class="line"><span class="string">y: 2.0</span></span><br><span class="line"><span class="string">theta: 0.0</span></span><br><span class="line"><span class="string">name: &#x27;turtle2&#x27;&quot;</span> </span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230326131920361.png" alt="image-20230326131920361"></p>
+<p>话题记录</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rosbag record -a -O cmd_record	话题记录</span><br><span class="line">rosbag play cmd_record.bag		话题</span><br></pre></td></tr></table></figure>
+
+<h1 id="6-创建工作空间与功能包"><a href="#6-创建工作空间与功能包" class="headerlink" title="6.创建工作空间与功能包"></a>6.创建工作空间与功能包</h1><p>workspace(工作空间)</p>
+<p>src,build,devel,install</p>
+<p><img src="/.%5CImage%5Cimage-20230326132543760.png" alt="image-20230326132543760"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> catkin_ws</span><br><span class="line"><span class="built_in">cd</span> catkin_ws/</span><br><span class="line"><span class="built_in">mkdir</span> src/</span><br><span class="line"><span class="built_in">cd</span> src/</span><br><span class="line">catkin_init_workspace</span><br><span class="line">编译</span><br><span class="line"><span class="built_in">cd</span> catkin_ws</span><br><span class="line">catkin_make</span><br><span class="line">更新环境</span><br><span class="line"><span class="built_in">source</span> devel/setup.bash</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$ROS_PACKAGE_PATH</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="7-发布者Publisher的编程实现"><a href="#7-发布者Publisher的编程实现" class="headerlink" title="7.发布者Publisher的编程实现"></a>7.发布者Publisher的编程实现</h1><p><img src="/.%5CImage%5Cimage-20230326133753178.png" alt="image-20230326133753178"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">安装新的package要更新bashrc</span><br><span class="line"><span class="built_in">source</span> devel/setup.bash</span><br><span class="line">为了方便，可以直接加入环境变量</span><br><span class="line"><span class="comment"># Set ROS melodic</span></span><br><span class="line"><span class="built_in">source</span> /opt/ros/melodic/setup.bash</span><br><span class="line"><span class="built_in">source</span> ~/catkin_ws/devel/setup.bash</span><br><span class="line"> </span><br><span class="line"><span class="comment"># Set ROS Network</span></span><br><span class="line"><span class="comment">#ifconfig查看你的电脑ip地址</span></span><br><span class="line"><span class="built_in">export</span> ROS_HOSTNAME=localhost</span><br><span class="line"><span class="built_in">export</span> ROS_MASTER_URI=http://<span class="variable">$&#123;ROS_HOSTNAME&#125;</span>:11311</span><br><span class="line"> </span><br><span class="line"><span class="comment"># Set ROS alias command 快捷指令</span></span><br><span class="line"><span class="built_in">alias</span> cw=<span class="string">&#x27;cd ~/catkin_ws&#x27;</span></span><br><span class="line"><span class="built_in">alias</span> cs=<span class="string">&#x27;cd ~/catkin_ws/src&#x27;</span></span><br><span class="line"><span class="built_in">alias</span> cm=<span class="string">&#x27;cd ~/catkin_ws &amp;&amp; catkin_make&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">创建一个发布者 在catkin_ws/src目录下</span><br><span class="line">catkin_create_pkg learning_topic roscpp rospy std_msgs geometry_msgs turtlesim</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230327130518792.png" alt="image-20230327130518792"></p>
+<p>在src中 ，创建一个文件<code>velocity_publisher.cpp</code></p>
+<p><img src="/.%5CImage%5Cimage-20230327131515663.png" alt="image-20230327131515663"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;geometry_msgs/Twist.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 初始化节点</span></span><br><span class="line">	ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;velocity_publisher&quot;</span>);</span><br><span class="line">    <span class="comment">// 创建节点句柄</span></span><br><span class="line">	ros::NodeHandle n;</span><br><span class="line">    <span class="comment">// 创建一个Publisher</span></span><br><span class="line">	ros::Publisher turtle_vel_pub = n.<span class="built_in">advertise</span>&lt;geometry_msgs::Twist&gt;(<span class="string">&quot;/turtle1/cmd_vel&quot;</span>,<span class="number">10</span>);</span><br><span class="line">	<span class="function">ros::Rate <span class="title">loop_rate</span><span class="params">(<span class="number">10</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="type">int</span> count=<span class="number">0</span>;</span><br><span class="line">	<span class="keyword">while</span>(ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">		geometry_msgs::Twist vel_msg;</span><br><span class="line">		vel_msg.linear.x=<span class="number">0.5</span>;</span><br><span class="line">		vel_msg.angular.z=<span class="number">0.2</span>;</span><br><span class="line">        turtle_vel_pub.<span class="built_in">publish</span>(vel_msg);</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Publish turtle velocity command[%0.2f m/s, %0.2f rad/s]&quot;</span>,</span><br><span class="line">                 vel_msg.linear.x, vel_msg.linear.z);</span><br><span class="line">        loop_rate.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>再编辑CMakelists.txt</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add_executable(velocity_publisher src/velocity_publisher.cpp)</span><br><span class="line">target_link_libraries(velocity_publisher $&#123;catkin_LIBRARIES&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230327131746100.png" alt="image-20230327131746100"></p>
+<p>编译并运行发布者</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cd ~/catkin_ws</span><br><span class="line">catkin_make</span><br><span class="line">source devel/setup.bash</span><br><span class="line">roscore</span><br><span class="line">rosrun turtlesim turtlesim_node</span><br><span class="line">rosrun learning_topic velocity_publisher</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230327132312397.png" alt="image-20230327132312397"></p>
+<h1 id="8-订阅者subscriber的编程实现"><a href="#8-订阅者subscriber的编程实现" class="headerlink" title="8.订阅者subscriber的编程实现"></a>8.订阅者subscriber的编程实现</h1><p><img src="/.%5CImage%5Cimage-20230327133057954.png" alt="image-20230327133057954"></p>
+<p><img src="/.%5CImage%5Cimage-20230327133227446.png" alt="image-20230327133227446"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//pose_subscriber.cpp</span></span><br><span class="line"><span class="comment">// 订阅/turtlr/pose的话题，消息类型是turtlesim::Pose</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;turtlesim/Pose.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">poseCallback</span><span class="params">(<span class="type">const</span> turtlesim::Pose::ConstPtr&amp; msg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Turtle pose: x:%0.6f, y:%0.6f&quot;</span>, msg-&gt;x, msg-&gt;y);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span>&#123;</span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;pose_subscriber&quot;</span>);</span><br><span class="line">    ros::NodeHandle n;</span><br><span class="line">    ros::Subscriber pose_sub = n.<span class="built_in">subscribe</span>(<span class="string">&quot;/turtle1/pose&quot;</span>,<span class="number">10</span>, poseCallback);</span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>后面步骤同Publisher</p>
+<p><img src="/.%5CImage%5Cimage-20230327133628736.png" alt="image-20230327133628736"></p>
+<h1 id="9-话题消息的定义和使用"><a href="#9-话题消息的定义和使用" class="headerlink" title="9. 话题消息的定义和使用"></a>9. 话题消息的定义和使用</h1><p><img src="/.%5CImage%5Cimage-20230327133721973.png" alt="image-20230327133721973"></p>
+<p><img src="/.%5CImage%5Cimage-20230328130203043.png" alt="image-20230328130203043"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">在learning_topic的目录下</span><br><span class="line">mkdir msg</span><br><span class="line">cd msg</span><br><span class="line">touch Person.msg</span><br><span class="line">gedit Person.msg</span><br></pre></td></tr></table></figure>
+
+<p>然后在文件中写入下面信息</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">string name</span><br><span class="line">uint8 sex</span><br><span class="line">uint8 age</span><br><span class="line">uint unknown = <span class="number">0</span></span><br><span class="line">uint8 male =<span class="number">1</span></span><br><span class="line">uint8 demale = <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>然后添加依赖</p>
+<p><img src="/.%5CImage%5Cimage-20230328130548199.png" alt="image-20230328130548199"></p>
+<p>在Cmakelists.txt中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">find_package(...</span><br><span class="line">  message_generation</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">add_message_files(FILES Person.msg)</span><br><span class="line">generate_messages(DEPENDENCIES std_msgs) //Person中的uint8等类型都是在std_msgs中定义的</span><br><span class="line">catkin_package(... message_runtime)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230328131131683.png" alt="image-20230328131131683"></p>
+<p><img src="/.%5CImage%5Cimage-20230328131059853.png" alt="image-20230328131059853"></p>
+<p><img src="/.%5CImage%5Cimage-20230328131352584.png" alt="image-20230328131352584"></p>
+<p>然后在catkin_ws文件中编译</p>
+<p><img src="/.%5CImage%5Cimage-20230328132708061.png" alt="image-20230328132708061"></p>
+<p>查看生成的头文件</p>
+<p><img src="/.%5CImage%5Cimage-20230328132807338.png" alt="image-20230328132807338"></p>
+<h2 id="发布和订阅的自定义实例"><a href="#发布和订阅的自定义实例" class="headerlink" title="发布和订阅的自定义实例"></a>发布和订阅的自定义实例</h2><p>person_publisher.cpp</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 发布一个/person_info的话题 自定义消息类型learning_topic::Person</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;learning_topic/Person.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 初始化节点</span></span><br><span class="line">	ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;person_publisher&quot;</span>);</span><br><span class="line">    <span class="comment">// 创建节点句柄</span></span><br><span class="line">	ros::NodeHandle n;</span><br><span class="line">    <span class="comment">// 创建一个Publisher</span></span><br><span class="line">	ros::Publisher person_info_pub = n.<span class="built_in">advertise</span>&lt;learning_topic::Person&gt;(<span class="string">&quot;/person_info&quot;</span>,<span class="number">10</span>);</span><br><span class="line">	<span class="function">ros::Rate <span class="title">loop_rate</span><span class="params">(<span class="number">1</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">	<span class="type">int</span> count=<span class="number">0</span>;</span><br><span class="line">	<span class="keyword">while</span>(ros::<span class="built_in">ok</span>())</span><br><span class="line">    &#123;</span><br><span class="line">	learning_topic::Person person_msg;</span><br><span class="line">	person_msg.name=<span class="string">&quot;Tom&quot;</span>;</span><br><span class="line">	person_msg.age = <span class="number">18</span>;</span><br><span class="line">	person_msg.sex=learning_topic::Person::male;</span><br><span class="line">	</span><br><span class="line"><span class="comment">//发布person_msg</span></span><br><span class="line">	person_info_pub.<span class="built_in">publish</span>(person_msg);</span><br><span class="line">        <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Publish person Info: name:%s age:%d  sex:%d&quot;</span>,</span><br><span class="line">                 person_msg.name.<span class="built_in">c_str</span>(), person_msg.age,person_msg.sex);</span><br><span class="line">        loop_rate.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>person_subscriber.cpp</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 订阅/person_info</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;learning_topic/Person.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">personCallback</span><span class="params">(<span class="type">const</span> turtlesim::Pose::ConstPtr&amp; msg)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Subscribe Person Info: name:%s  age:%d  sex:%d&quot;</span>, msg.name.<span class="built_in">c_str</span>(), msg-&gt;age, msg-&gt;sex);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span>&#123;</span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;person_subscriber&quot;</span>);</span><br><span class="line">    ros::NodeHandle n;</span><br><span class="line">    ros::Subscriber pose_sub = n.<span class="built_in">subscribe</span>(<span class="string">&quot;/person_info&quot;</span>,<span class="number">10</span>, personCallback);</span><br><span class="line">    ros::<span class="built_in">spin</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改Cmakelists.txt</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">add_executable(person_publisher src/person_publisher.cpp)</span><br><span class="line">target_link_libraries(person_publisher $&#123;catkin_LIBRARIES&#125;)</span><br><span class="line">//用于自定义消息的链接</span><br><span class="line">add_dependencies(person_publisher $&#123;PROJECT_NAME&#125;_generate_messages_cpp)</span><br><span class="line"></span><br><span class="line">add_executable(person_subscriber src/person_subscriber.cpp)</span><br><span class="line">target_link_libraries(person_subscriber $&#123;catkin_LIBRARIES&#125;)</span><br><span class="line">add_dependencies(person_subscriber $&#123;PROJECT_NAME&#125;_generate_messages_cpp)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230328134151705.png" alt="image-20230328134151705"></p>
+<p>编译后生成可执行文件</p>
+<p><img src="/.%5CImage%5Cimage-20230328134808538.png" alt="image-20230328134808538"></p>
+<p>运行两个程序，此时已经连接，关闭rosmaster也可以继续通信。</p>
+<p><img src="/.%5CImage%5Cimage-20230328135007712.png" alt="image-20230328135007712"></p>
+<h1 id="10-客户端Client的实现"><a href="#10-客户端Client的实现" class="headerlink" title="10.客户端Client的实现"></a>10.客户端Client的实现</h1><p><img src="/.%5CImage%5Cimage-20230328202509053.png" alt="image-20230328202509053"></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> !/catkin_ws/src</span><br><span class="line">catkin_create_pkg learning_service roscpp rospy std_msgs geometry_msgs turtlesim</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230328210152832.png" alt="image-20230328210152832"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 请求/spawn服务 服务的数据类型turtlesim::Spawn</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;turtlesim/Spawn.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span>&#123;</span><br><span class="line">	<span class="comment">// 初始化ROS节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;turtle_spawn&quot;</span>);</span><br><span class="line">	<span class="comment">// 创建节点句柄</span></span><br><span class="line">    ros::NodeHandle node;</span><br><span class="line">	<span class="comment">// 发现Spawn服务后，创建一个服务客户端，连接名为/spawn的service，等待spawn服务</span></span><br><span class="line">    ros::service::<span class="built_in">waitForService</span>(<span class="string">&quot;/spawn&quot;</span>);</span><br><span class="line">    ros::ServiceClient add_turtle = node.<span class="built_in">serviceClient</span>&lt;turtlesim::Spawn&gt;(<span class="string">&quot;/spawn&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 初始化turtlesim::Spawn的请求数据</span></span><br><span class="line">    turtlesim::Spawn srv;</span><br><span class="line">    srv.request.x = <span class="number">2.0</span>;</span><br><span class="line">    srv.request.y = <span class="number">2.0</span>;</span><br><span class="line">    srv.request.name = <span class="string">&quot;turtle2&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 请求服务调用</span></span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Call service to spawn turtle[x:%0.6f, y:%0.6f, name:%s]&quot;</span>,</span><br><span class="line">	      srv.request.x, srv.request.y, srv.request.name.<span class="built_in">c_str</span>());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 阻塞型函数  有反馈了才会继续往下走</span></span><br><span class="line">    add_turtle.<span class="built_in">call</span>(srv);    </span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 显示服务调用结果</span></span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Spawn turtle successfully [name:%s]&quot;</span> ,srv.request.name.<span class="built_in">c_str</span>());</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CMake中加入这两行</span><br><span class="line"><span class="keyword">add_executable</span>(turtle_spawn src/turtle_spawn.cpp)</span><br><span class="line"><span class="keyword">target_link_libraries</span>(turtle_spawn <span class="variable">$&#123;catkin_LIBRARIES&#125;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>编译结束</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">roscore</span><br><span class="line">rosrun turtlesim turtlesim_node</span><br><span class="line">rosrun learning_service turtle_spawn</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230328212352527.png" alt="image-20230328212352527"></p>
+<h1 id="11-服务端Server的实现"><a href="#11-服务端Server的实现" class="headerlink" title="11.服务端Server的实现"></a>11.服务端Server的实现</h1><p><img src="/.%5CImage%5Cimage-20230328212527169.png" alt="image-20230328212527169"></p>
+<p>这里Client发送指令要求海龟运动，Server控制海龟运动。</p>
+<p><img src="/.%5CImage%5Cimage-20230328212645555.png" alt="image-20230328212645555"></p>
+<p>service中的标准trigger是这样的结构</p>
+<p><img src="/.%5CImage%5Cimage-20230328214309069.png" alt="image-20230328214309069"></p>
+<p>—之上是request的内容，之下是response的内容。</p>
+<p>编辑CMakelists.txt</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add_executable(turtle_command_server src/turtle_command_server.cpp)</span><br><span class="line">target_link_libraries(turtle_command_server $&#123;catkin_LIBRARIES&#125;)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 执行/spawn服务 服务的数据类型std_srvs/Trigger</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;geometry_msgs/Twist.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;std_srvs/Trigger.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">ros::Publisher turtle_vel_pub;</span><br><span class="line"><span class="type">bool</span> pubCommand =<span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">commandCallback</span><span class="params">(std_srvs::Trigger::Request&amp; req,</span></span></span><br><span class="line"><span class="params"><span class="function">			std_srvs::Trigger::Response &amp; res)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	pubCommand = !pubCommand;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 显示请求数据</span></span><br><span class="line">	<span class="built_in">ROS_INFO</span>(<span class="string">&quot;Publish turtle velocity command [%s]&quot;</span>, pubCommand == 			<span class="literal">true</span>?<span class="string">&quot;Yes&quot;</span>:<span class="string">&quot;No&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 设置反馈数据</span></span><br><span class="line">	res.success = <span class="literal">true</span>;</span><br><span class="line">	res.message = <span class="string">&quot;Change turtle command state&quot;</span>;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span>&#123;</span><br><span class="line">	<span class="comment">// 初始化ROS节点</span></span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;turtle_command_server&quot;</span>);</span><br><span class="line">	<span class="comment">// 创建节点句柄</span></span><br><span class="line">    ros::NodeHandle n;</span><br><span class="line">	<span class="comment">// 创建一个/turtle_command的server 注册回调函数commandCallback</span></span><br><span class="line">ros::ServiceServer command_service = n.<span class="built_in">advertiseService</span>(<span class="string">&quot;/turtle_command&quot;</span>, commandCallback);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 创建一个Publisher 发布名为/turtle1/cmd_vel的topic 消息类型geometry_msgs::Twist,队列长度为10</span></span><br><span class="line">	turtle_vel_pub = n.<span class="built_in">advertise</span>&lt;geometry_msgs::Twist&gt;(<span class="string">&quot;/turtle1/cmd_vel&quot;</span>,<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 循环等待回调函数</span></span><br><span class="line">	<span class="built_in">ROS_INFO</span>(<span class="string">&quot;Ready to receive turtle command.&quot;</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 设置等待回调函数</span></span><br><span class="line">	<span class="function">ros::Rate <span class="title">loop_rate</span><span class="params">(<span class="number">10</span>)</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">while</span>(ros::<span class="built_in">ok</span>())</span><br><span class="line">	&#123;</span><br><span class="line">	<span class="comment">// 查看一次回调函数队列</span></span><br><span class="line">	ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">	<span class="comment">// 如果是真 则发布指令速度</span></span><br><span class="line">	<span class="keyword">if</span>(pubCommand)</span><br><span class="line">	&#123;</span><br><span class="line">	geometry_msgs::Twist vel_msg;</span><br><span class="line">	vel_msg.linear.x = <span class="number">0.5</span>;</span><br><span class="line">	vel_msg.linear.z = <span class="number">0.5</span>;</span><br><span class="line">	turtle_vel_pub.<span class="built_in">publish</span>(vel_msg);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 按照循环频率延时</span></span><br><span class="line">	loop_rate.<span class="built_in">sleep</span>();</span><br><span class="line">	&#125;</span><br><span class="line">    	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译成功后</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">roscore</span><br><span class="line">rosrun turtlesim turtlesim_node</span><br><span class="line">rosrun learning_service turtle_command_server</span><br><span class="line">rosservice call /turtle_command <span class="string">&quot;&#123;&#125;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230328215257752.png" alt="image-20230328215257752"></p>
+<p>这里使用<code>rosservice call</code>来对开关进行操作。</p>
+<h1 id="12-服务数据的定义与使用"><a href="#12-服务数据的定义与使用" class="headerlink" title="12.服务数据的定义与使用"></a>12.服务数据的定义与使用</h1><p><img src="/.%5CImage%5Cimage-20230328221611746.png" alt="image-20230328221611746"></p>
+<h2 id="12-1-自定义数据"><a href="#12-1-自定义数据" class="headerlink" title="12.1 自定义数据"></a>12.1 自定义数据</h2><p>srv数据和msg数据的区别在于srv是有response的</p>
+<p><img src="/.%5CImage%5Cimage-20230328221929918.png" alt="image-20230328221929918"></p>
+<p><img src="/.%5CImage%5Cimage-20230328222038472.png" alt="image-20230328222038472">—是用来分割request和response的</p>
+<p>然后添加package.xml</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;build_depend&gt;message_generation&lt;/build_depend&gt;</span><br><span class="line">&lt;exec_depend&gt;message_runtime&lt;/exec_depend&gt;</span><br></pre></td></tr></table></figure>
+
+<p>在CMakelists.txt中添加，如Person.msg一样，只需要更改后缀为srv</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add_service_files(FILES Person.srv)</span><br><span class="line">//这里使用的是service</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230328223454615.png" alt="image-20230328223454615"></p>
+<h2 id="12-2-使用生成的数据结构"><a href="#12-2-使用生成的数据结构" class="headerlink" title="12.2 使用生成的数据结构"></a>12.2 使用生成的数据结构</h2><p>person_server.cpp</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该例程将请求/show_person 服务数据类型learning_service::Person</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;learning_service/Person.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">bool</span> <span class="title">personCallback</span><span class="params">(learning_service::Person::Request&amp; req,</span></span></span><br><span class="line"><span class="params"><span class="function">			learning_service::Person::Response &amp; res)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 显示请求数据</span></span><br><span class="line">	<span class="built_in">ROS_INFO</span>(<span class="string">&quot;Person: name:%s age:%d sex:%d,&quot;</span>, req.name.<span class="built_in">c_str</span>(), req.age, req.sex);</span><br><span class="line">	<span class="comment">// 设置反馈数据</span></span><br><span class="line">	res.result = <span class="string">&quot;OK&quot;</span>;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span>&#123;</span><br><span class="line">    ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;person_server&quot;</span>);</span><br><span class="line">    ros::NodeHandle n;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 创建一个/show_person的server 注册回调函数personCallback</span></span><br><span class="line">    ros::ServiceServer person_service = n.<span class="built_in">advertiseService</span>(<span class="string">&quot;/show_person&quot;</span>, personCallback);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 循环等待回调函数</span></span><br><span class="line">	<span class="built_in">ROS_INFO</span>(<span class="string">&quot;Ready to show person information&quot;</span>);</span><br><span class="line">        ros::<span class="built_in">spin</span>();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>person_client.cpp</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该例程将请求/show_person 服务数据类型learning_service::Person</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;learning_service/Person.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 初始化节点</span></span><br><span class="line">	ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;person_client&quot;</span>);</span><br><span class="line">    <span class="comment">// 创建节点句柄</span></span><br><span class="line">	ros::NodeHandle node;</span><br><span class="line">    <span class="comment">// 发现/spawn服务后，创建一个服务器客户端 连接名为/spawn的service</span></span><br><span class="line">	ros::service::<span class="built_in">waitForService</span>(<span class="string">&quot;/show_person&quot;</span>);</span><br><span class="line">	ros::ServiceClient person_client = 		   node.<span class="built_in">serviceClient</span>&lt;learning_service::Person&gt;(<span class="string">&quot;/show_person&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 初始化learning_service::Person的请求数据</span></span><br><span class="line">	learning_service::Person srv;</span><br><span class="line">	srv.request.name = <span class="string">&quot;Tom&quot;</span>;</span><br><span class="line">	srv.request.age = <span class="number">20</span>;</span><br><span class="line">	<span class="comment">// 在request中 所以多了一个作用阈</span></span><br><span class="line">	srv.request.sex=learning_service::Person::Request::male;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 请求服务调用</span></span><br><span class="line">	<span class="built_in">ROS_INFO</span>(<span class="string">&quot;Call service to show person[name:%s age:%d  sex:%d&quot;</span>,</span><br><span class="line">                 srv.request.name.<span class="built_in">c_str</span>(), srv.request.age,srv.request.sex);</span><br><span class="line">	person_client.<span class="built_in">call</span>(srv);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 显示服务调用结果</span></span><br><span class="line">	<span class="built_in">ROS_INFO</span>(<span class="string">&quot;show person result : %s&quot;</span>, srv.response.result.<span class="built_in">c_str</span>());</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>CMakelists.txt里面</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">add_executable(person_client src/person_client.cpp)</span><br><span class="line">target_link_libraries(person_client $&#123;catkin_LIBRARIES&#125;)</span><br><span class="line">//用于自定义消息的链接</span><br><span class="line">add_dependencies(person_client $&#123;PROJECT_NAME&#125;_generate_messages_cpp)</span><br><span class="line"></span><br><span class="line">add_executable(person_server src/person_server.cpp)</span><br><span class="line">target_link_libraries(person_server $&#123;catkin_LIBRARIES&#125;)</span><br><span class="line">add_dependencies(person_server $&#123;PROJECT_NAME&#125;_generate_messages_cpp)</span><br></pre></td></tr></table></figure>
+
+<p>然后编译，虽然编译通过了，但是运行出错</p>
+<p><img src="/.%5CImage%5Cimage-20230328231020342.png" alt="image-20230328231020342"></p>
+<p>原因是clien里面的初始化多了一个.</p>
+<p><img src="/.%5CImage%5Cimage-20230328231005854.png" alt="image-20230328231005854"></p>
+<p>输入可得下面图中的结果</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">roscore</span><br><span class="line">rosrun learning_service person_server</span><br><span class="line">rosrun learning_service person_client</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230328231203519.png" alt="image-20230328231203519"></p>
+<h1 id="13-参数的使用与编程方法"><a href="#13-参数的使用与编程方法" class="headerlink" title="13.参数的使用与编程方法"></a>13.参数的使用与编程方法</h1><p><img src="/.%5CImage%5Cimage-20230329133236794.png" alt="image-20230329133236794"></p>
+<p>就是一个全局参数的存储空间</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">创建一个para的文件0</span><br><span class="line">catkin_create_pkg learning_parameter roscpp rospy std_srvs</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230329133601537.png" alt="image-20230329133601537"></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 列出当前所有参数</span></span><br><span class="line">rospara list</span><br><span class="line"><span class="comment">// 显示某个参数的值</span></span><br><span class="line">rosparam get param_key    </span><br><span class="line"><span class="comment">// 设置某个参数的值   </span></span><br><span class="line">rosparam set param_key param_value </span><br><span class="line"><span class="comment">//保存参数到文件</span></span><br><span class="line">rosparam dump file_name    </span><br><span class="line"><span class="comment">//从文件读取参数   </span></span><br><span class="line">rosparam load file_name</span><br><span class="line"><span class="comment">//删除参数</span></span><br><span class="line">rosparam <span class="keyword">delete</span> param_key    </span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230329134335715.png" alt="image-20230329134335715"></p>
+<p>查看版本</p>
+<p>还可以更改一些变量，如其中的颜色</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rosparam get /turtlesim/background_r</span><br><span class="line">rosparam set /turtlesim/background_r 255</span><br><span class="line">rosservice call /clear &quot;&#123;&#125;&quot; </span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230329134910878.png" alt="image-20230329134910878"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosparam dump param.yaml</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230329135101916.png" alt="image-20230329135101916"></p>
+<p>修改文件之后，可以再加载进来</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rosparam load param.yaml</span><br><span class="line">原来是0，通过文件修改成了255</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230329135305117.png" alt="image-20230329135305117"></p>
+<h2 id="自定义函数实现rosparam调用"><a href="#自定义函数实现rosparam调用" class="headerlink" title="自定义函数实现rosparam调用"></a>自定义函数实现rosparam调用</h2><p><img src="/.%5CImage%5Cimage-20230329135509210.png" alt="image-20230329135509210"></p>
+<p>parameter_config.cpp</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该例程设置和读取海龟例程中的参数</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;std_srvs/Empty.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="type">int</span> red,green,blue;</span><br><span class="line">    <span class="comment">// 初始化节点</span></span><br><span class="line">ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;parameter_config&quot;</span>);</span><br><span class="line">    <span class="comment">// 创建节点句柄</span></span><br><span class="line">ros::NodeHandle node;</span><br><span class="line"><span class="comment">// 读取背景颜色参数</span></span><br><span class="line">ros::param::<span class="built_in">get</span>(<span class="string">&quot;/turtlesim/background_r&quot;</span>,red);</span><br><span class="line">ros::param::<span class="built_in">get</span>(<span class="string">&quot;/turtlesim/background_g&quot;</span>,green);</span><br><span class="line">ros::param::<span class="built_in">get</span>(<span class="string">&quot;/turtlesim/background_b&quot;</span>,blue);</span><br><span class="line"><span class="built_in">ROS_INFO</span>(<span class="string">&quot;Get background color[%d %d %d]&quot;</span>,red,green,blue);</span><br><span class="line">    <span class="comment">// 设置背景颜色参数</span></span><br><span class="line">ros::param::<span class="built_in">set</span>(<span class="string">&quot;/turtlesim/background_r&quot;</span>,<span class="number">255</span>);</span><br><span class="line">ros::param::<span class="built_in">set</span>(<span class="string">&quot;/turtlesim/background_g&quot;</span>,<span class="number">255</span>);</span><br><span class="line">ros::param::<span class="built_in">set</span>(<span class="string">&quot;/turtlesim/background_b&quot;</span>,<span class="number">255</span>);</span><br><span class="line"><span class="built_in">ROS_INFO</span>(<span class="string">&quot;Set background color[255 255 255]&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 读取背景颜色参数</span></span><br><span class="line">ros::param::<span class="built_in">get</span>(<span class="string">&quot;/turtlesim/background_r&quot;</span>,red);</span><br><span class="line">ros::param::<span class="built_in">get</span>(<span class="string">&quot;/turtlesim/background_g&quot;</span>,green);</span><br><span class="line">ros::param::<span class="built_in">get</span>(<span class="string">&quot;/turtlesim/background_b&quot;</span>,blue);</span><br><span class="line"><span class="built_in">ROS_INFO</span>(<span class="string">&quot;Get background color[%d %d %d]&quot;</span>,red,green,blue);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 刷新背景</span></span><br><span class="line">ros::service::<span class="built_in">waitForService</span>(<span class="string">&quot;/clear&quot;</span>);</span><br><span class="line">ros::ServiceClient clear_background = node.<span class="built_in">serviceClient</span>&lt;std_srvs::Empty&gt;(<span class="string">&quot;/clear&quot;</span>);</span><br><span class="line">std_srvs::Empty srv;</span><br><span class="line">clear_background.<span class="built_in">call</span>(srv);</span><br><span class="line"><span class="built_in">sleep</span>(<span class="number">1</span>);</span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add_executable(parameter_config src/parameter_config.cpp)</span><br><span class="line">target_link_libraries(parameter_config $&#123;catkin_LIBRARIES&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230330133026782.png" alt="image-20230330133026782"></p>
+<h1 id="14-ROS中的坐标系管理系统"><a href="#14-ROS中的坐标系管理系统" class="headerlink" title="14.ROS中的坐标系管理系统"></a>14.ROS中的坐标系管理系统</h1><p>TF坐标变换，transform，默认记录10s之内各个坐标系之间的关系。</p>
+<p>是广播和监听的机制。</p>
+<p><img src="/.%5CImage%5Cimage-20230331131829247.png" alt="image-20230331131829247"></p>
+<p>实验：两个海龟，后面海龟跟着我们控制的海龟进行运动。</p>
+<p><img src="/.%5CImage%5Cimage-20230331132009892.png" alt="image-20230331132009892"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install ros-melodic-turtle-tf</span><br><span class="line">// 启动节点</span><br><span class="line">roslaunch turtle_tf turtle_tf_demo.launch</span><br><span class="line">// 监听键盘</span><br><span class="line">rosrun turtlesim turtle_teleop_key</span><br><span class="line">rosrun tf view_frames</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230331132532034.png" alt="image-20230331132532034"></p>
+<p>最后一句指令保存了当前的坐标系信息，保存在当前的主文件夹下。</p>
+<p><img src="/.%5CImage%5Cimage-20230331132644635.png" alt="image-20230331132644635"></p>
+<p>还可以</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rosrun tf tf_echo turtle1 turtle2</span><br><span class="line">// 可以获取任何两个坐标系之间的关系</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230331132905038.png" alt="image-20230331132905038"></p>
+<p>或者使用rviz可视化平台来观察</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosrun rviz rviz -d &#x27;rospack find turtle_tf&#x27; /rviz/turtle_rviz.rviz</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230331133215010.png" alt="image-20230331133215010"></p>
+<p>再次运行海龟，可以实时看到两个坐标系的变化</p>
+<p><img src="/.%5CImage%5Cimage-20230331133324833.png" alt="image-20230331133324833"></p>
+<h1 id="15-TF坐标系广播与监听的编程实现"><a href="#15-TF坐标系广播与监听的编程实现" class="headerlink" title="15.TF坐标系广播与监听的编程实现"></a>15.TF坐标系广播与监听的编程实现</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">catkin_create_pkg learning_tf roscpp rospy tf turtlesim</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230331203915428.png" alt="image-20230331203915428"></p>
+<p>命名问题是防止文件冲突。重映射。</p>
+<p>turtle_tf_broadcaster.cpp</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该例程将产生tf数据 并计算发布turtle2的速度指令</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;tf/transform_broadcaster.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;turtlesim/Pose.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">std::string turtle_name;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">poseCallback</span><span class="params">(<span class="type">const</span> turtlesim::PoseConstPtr&amp; msg)</span></span>&#123;</span><br><span class="line"><span class="comment">// 创建tf广播器</span></span><br><span class="line"><span class="type">static</span> tf::TransformBroadcaster br;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化tf数据</span></span><br><span class="line">tf::Transform transform;</span><br><span class="line">transform.<span class="built_in">setOrigin</span>(tf::<span class="built_in">Vector3</span>(msg-&gt;x, msg-&gt;y,<span class="number">0.0</span>));</span><br><span class="line">tf::Quaternion q;</span><br><span class="line">q.<span class="built_in">setRPY</span>(<span class="number">0</span>,<span class="number">0</span>,msg-&gt;theta);</span><br><span class="line">transform.<span class="built_in">setRotation</span>(q);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 广播world与海龟坐标系之间的tf数据</span></span><br><span class="line">br.<span class="built_in">sendTransform</span>(tf::<span class="built_in">StampedTransform</span>(transform, ros::Time::<span class="built_in">now</span>(), <span class="string">&quot;world&quot;</span>, turtle_name));</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="comment">// 初始化节点</span></span><br><span class="line">ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;my_tf_broadcaster&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(argc != <span class="number">2</span>)&#123;</span><br><span class="line"><span class="built_in">ROS_ERROR</span>(<span class="string">&quot;need turtle name as argument&quot;</span>);</span><br><span class="line"><span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line">turtle_name=argv[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// 订阅海龟的位姿话题</span></span><br><span class="line">ros::NodeHandle node;</span><br><span class="line"><span class="comment">// 发现/spawn服务后，创建一个服务器客户端 连接名为/spawn的service</span></span><br><span class="line">ros::Subscriber sub = node.<span class="built_in">subscribe</span>(turtle_name + <span class="string">&quot;/pose&quot;</span>,<span class="number">10</span>, &amp;poseCallback);</span><br><span class="line"></span><br><span class="line">ros::<span class="built_in">spin</span>();		   </span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>turtle_tf_listener.cpp</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 该例程将产生tf数据 并计算发布turtle2的速度指令</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;tf/transform_listener.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;turtlesim/Spawn.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// 初始化节点</span></span><br><span class="line">	ros::<span class="built_in">init</span>(argc,argv,<span class="string">&quot;my_tf_listener&quot;</span>);</span><br><span class="line">	<span class="comment">// 创建节点句柄</span></span><br><span class="line">	ros::NodeHandle node;</span><br><span class="line"><span class="comment">// 请求产生turtle2</span></span><br><span class="line">ros::service::<span class="built_in">waitForService</span>(<span class="string">&quot;/spawn&quot;</span>);</span><br><span class="line">ros::ServiceClient add_turtle = node.<span class="built_in">serviceClient</span>&lt;turtlesim::Spawn&gt;(<span class="string">&quot;/spawn&quot;</span>);</span><br><span class="line">turtlesim::Spawn srv;</span><br><span class="line">add_turtle.<span class="built_in">call</span>(srv);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建发布turtle2速度控制指令的发布者</span></span><br><span class="line">ros::Publisher turtle_vel = node.<span class="built_in">advertise</span>&lt;geometry_msgs::Twist&gt;(<span class="string">&quot;/turtle2/cmd_vel&quot;</span>,<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建tf的监听器</span></span><br><span class="line">tf::TransformListener listener;</span><br><span class="line"></span><br><span class="line"><span class="function">ros::Rate <span class="title">rate</span><span class="params">(<span class="number">10.0</span>)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span>(ros::<span class="built_in">ok</span>())</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 获取turtle1和turtle2坐标系之间的tf数据</span></span><br><span class="line">tf::StampedTransform transform;</span><br><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line">listener.<span class="built_in">waitForTransform</span>(<span class="string">&quot;/turtle2&quot;</span>,<span class="string">&quot;turtle1&quot;</span>, ros::<span class="built_in">Time</span>(<span class="number">0</span>),ros::<span class="built_in">Duration</span>(<span class="number">3.0</span>));</span><br><span class="line">listener.<span class="built_in">lookupTransform</span>(<span class="string">&quot;/turtle2&quot;</span>,<span class="string">&quot;turtle1&quot;</span>, ros::<span class="built_in">Time</span>(<span class="number">0</span>),transform);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">catch</span>(tf::TransformException&amp; ex)</span><br><span class="line">&#123;</span><br><span class="line"><span class="built_in">ROS_ERROR</span>(<span class="string">&quot;%s&quot;</span>,ex.<span class="built_in">what</span>());</span><br><span class="line">ros::<span class="built_in">Duration</span>(<span class="number">1.0</span>).<span class="built_in">sleep</span>();</span><br><span class="line"><span class="keyword">continue</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 根据turtle1和turtle2之间的关系，发布turtle2的速度控制指令</span></span><br><span class="line"></span><br><span class="line">geometry_msgs::Twist vel_msg;</span><br><span class="line">vel_msg.angular.z = <span class="number">4.0</span> * <span class="built_in">atan2</span>(transform.<span class="built_in">getOrigin</span>().<span class="built_in">y</span>(),</span><br><span class="line">				transform.<span class="built_in">getOrigin</span>().<span class="built_in">x</span>());</span><br><span class="line">vel_msg.linear.x = <span class="number">0.5</span> * <span class="built_in">sqrt</span>(<span class="built_in">pow</span>(transform.<span class="built_in">getOrigin</span>().<span class="built_in">x</span>(),<span class="number">2</span>)+</span><br><span class="line">				<span class="built_in">pow</span>(transform.<span class="built_in">getOrigin</span>().<span class="built_in">y</span>(),<span class="number">2</span>));</span><br><span class="line">turtle_vel.<span class="built_in">publish</span>(vel_msg);</span><br><span class="line">rate.<span class="built_in">sleep</span>();</span><br><span class="line">		&#125;   </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">add_executable(turtle_tf_broadcaster.cpp src/turtle_tf_broadcaster.cpp.cpp)</span><br><span class="line">target_link_libraries(turtle_tf_broadcaster.cpp $&#123;catkin_LIBRARIES&#125;)</span><br><span class="line">add_executable(turtle_tf_listener.cpp src/turtle_tf_listener.cpp.cpp)</span><br><span class="line">target_link_libraries(turtle_tf_listener.cpp $&#123;catkin_LIBRARIES&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>然后编译</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">roscore</span><br><span class="line">rosrun turtlesim turtlesim_node</span><br><span class="line">rosrun learning_tf turtle_tf_broadcaster __name:=turtle1_tf_broadcaster /turtle1</span><br><span class="line">rosrun learning_tf turtle_tf_broadcaster __name:=turtle2_tf_broadcaster /turtle2</span><br><span class="line">rosrun learning_tf turtle_tf_listener</span><br><span class="line">rosrun turtlesim turtle_teleop_key</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230331232650624.png" alt="image-20230331232650624"></p>
+<h1 id="16-launch启动文件的使用方法"><a href="#16-launch启动文件的使用方法" class="headerlink" title="16.launch启动文件的使用方法"></a>16.launch启动文件的使用方法</h1><p>Launch文件可以启动很多节点。通过XML文件实现多节点的配置和启动，自动启动ROS Master。</p>
+<p><img src="/.%5CImage%5Cimage-20230401222754176.png" alt="image-20230401222754176"></p>
+<p><img src="/.%5CImage%5Cimage-20230401223018886.png" alt="image-20230401223018886"></p>
+<p>param是存储在参数服务器中的，args是文件内部的局部变量。</p>
+<p><img src="/.%5CImage%5Cimage-20230401223225576.png" alt="image-20230401223225576"></p>
+<h2 id="示例1"><a href="#示例1" class="headerlink" title="示例1"></a>示例1</h2><p><img src="/.%5CImage%5Cimage-20230401223352526.png" alt="image-20230401223352526"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">catkin_create_pkg learning_launch</span><br><span class="line">cd learning_launch/</span><br><span class="line">mkdir launch</span><br></pre></td></tr></table></figure>
+
+<p>simple.launch</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">launch</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;learning_topic&quot;</span> <span class="attr">type</span>=<span class="string">&quot;person_subscriber&quot;</span> <span class="attr">name</span>=<span class="string">&quot;talker&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;learning_topic&quot;</span> <span class="attr">type</span>=<span class="string">&quot;person_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;listener&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">launch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后输入</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">roslaunch learning_launch simple.launch</span><br></pre></td></tr></table></figure>
+
+<p><img src="/.%5CImage%5Cimage-20230401224050649.png" alt="image-20230401224050649"></p>
+<h2 id="示例2"><a href="#示例2" class="headerlink" title="示例2"></a>示例2</h2><p>turtle_parameter_config.launch</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">launch</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;/turtle_number&quot;</span>  <span class="attr">value</span>=<span class="string">&quot;2&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;turtlesim&quot;</span> <span class="attr">type</span>=<span class="string">&quot;turtlesim_node&quot;</span> <span class="attr">name</span>=<span class="string">&quot;turtlesim_node&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;/turtle_name1&quot;</span>  <span class="attr">value</span>=<span class="string">&quot;Tom&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;/turtle_name2&quot;</span>  <span class="attr">value</span>=<span class="string">&quot;Jerry&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">rosparam</span> <span class="attr">file</span>=<span class="string">&quot;$(find learning_launch)/config/param.yaml&quot;</span> <span class="attr">command</span>=<span class="string">&quot;load&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">node</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;turtlesim&quot;</span> <span class="attr">type</span>=<span class="string">&quot;turtle_teleop_key&quot;</span> <span class="attr">name</span>=<span class="string">&quot;turtle_teleop_key&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">launch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后在leaning_launch的同级文件夹下创建config文件，里面包含param.yaml文件。</p>
+<p><img src="/.%5CImage%5Cimage-20230401225024731.png" alt="image-20230401225024731"></p>
+<p>param.yaml</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">A:</span> <span class="number">123</span></span><br><span class="line"><span class="attr">B:</span> <span class="string">&quot;hello&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">group:</span></span><br><span class="line">  <span class="attr">C:</span> <span class="number">456</span></span><br><span class="line">  <span class="attr">D:</span> <span class="string">&quot;hello&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>上面的书写要求很严格 A：之后要留一个空格，group下面一行，需要空两个字符。</p>
+<p>然后运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">roslaunch learning_launch turtlesim_parameter_config.launch</span><br></pre></td></tr></table></figure>
+
+<p>运行以后，会带上前面的命名空间名称</p>
+<p><img src="/.%5CImage%5Cimage-20230401225836324.png" alt="image-20230401225836324"></p>
+<h2 id="示例3"><a href="#示例3" class="headerlink" title="示例3"></a>示例3</h2><p>start_tf_demo_C++.launch</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&lt;launch&gt;</span></span><br><span class="line"><span class="string">&lt;!--</span> <span class="string">Turtlesim</span> <span class="string">Node--&gt;</span></span><br><span class="line"><span class="string">&lt;node</span> <span class="string">pkg=&quot;turtlesim&quot;</span> <span class="string">type=&quot;turtlesim_node&quot;</span> <span class="string">name=&quot;sim&quot;/&gt;</span></span><br><span class="line"><span class="string">&lt;node</span> <span class="string">pkg=&quot;turtlesim&quot;</span> <span class="string">type=&quot;turtle_teleop_key&quot;</span> <span class="string">name=&quot;teleop&quot;</span> <span class="string">output=&quot;screen&quot;/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="string">&lt;node</span> <span class="string">pkg=&quot;learning_tf&quot;</span> <span class="string">type=&quot;turtle_tf_broadcaster&quot;</span> <span class="string">args=&quot;/turtle1&quot;</span> <span class="string">name=&quot;turtle1_tf_broadcaster&quot;/&gt;</span></span><br><span class="line"><span class="string">&lt;node</span> <span class="string">pkg=&quot;learning_tf&quot;</span> <span class="string">type=&quot;turtle_tf_broadcaster&quot;</span> <span class="string">args=&quot;/turtle2&quot;</span> <span class="string">name=&quot;turtle2_tf_broadcaster&quot;/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="string">&lt;node</span> <span class="string">pkg=&quot;learning_tf&quot;</span> <span class="string">type=&quot;turtle_tf_listener&quot;</span> <span class="string">name=&quot;listener&quot;/&gt;</span></span><br><span class="line"><span class="string">&lt;/launch&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/.%5CImage%5Cimage-20230401230348949.png" alt="image-20230401230348949"></p>
+<h1 id="17-常用可视化工具的使用"><a href="#17-常用可视化工具的使用" class="headerlink" title="17.常用可视化工具的使用"></a>17.常用可视化工具的使用</h1><p><img src="/.%5CImage%5Cimage-20230401230706127.png" alt="image-20230401230706127"></p>
+<p><img src="/.%5CImage%5Cimage-20230401230837262.png" alt="image-20230401230837262"></p>
+<p>warning error info</p>
+<p><img src="/.%5CImage%5Cimage-20230401231018830.png" alt="image-20230401231018830"></p>
+<p>如果海龟运动，可以得到数据</p>
+<p><img src="/.%5CImage%5Cimage-20230401231142699.png" alt="image-20230401231142699"></p>
+<p>图像</p>
+<p><img src="/.%5CImage%5Cimage-20230401231234491.png" alt="image-20230401231234491"></p>
+<p>rqt里面包含了一些常用的功能</p>
+<p><img src="/.%5CImage%5Cimage-20230401231413496.png" alt="image-20230401231413496"></p>
+<p>Rviz</p>
+<p><img src="/.%5CImage%5Cimage-20230401231439971.png" alt="image-20230401231439971"></p>
+<p><img src="/.%5CImage%5Cimage-20230401231538973.png" alt="image-20230401231538973"></p>
+<p><img src="/.%5CImage%5Cimage-20230401231552501.png" alt="image-20230401231552501"></p>
+<p>输入 启动rviz</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rosrun rviz rviz</span><br></pre></td></tr></table></figure>
+
+<p>rviz要有数据才能用  Gazebo是仿真用的</p>
+<p><img src="/.%5CImage%5Cimage-20230401231953588.png" alt="image-20230401231953588"></p>
+<p><img src="/.%5CImage%5Cimage-20230401232025390.png" alt="image-20230401232025390"></p>
+<p>需要配置一下，现在还没有配环境。</p>
+<p><img src="/.%5CImage%5Cimage-20230401232206578.png" alt="image-20230401232206578"></p>
+<p><img src="/.%5CImage%5Cimage-20230401232512522.png" alt="image-20230401232512522"></p>
+<h1 id="18-课程总结与进阶攻略"><a href="#18-课程总结与进阶攻略" class="headerlink" title="18.课程总结与进阶攻略"></a>18.课程总结与进阶攻略</h1><p><img src="/.%5CImage%5Cimage-20230401232606475.png" alt="image-20230401232606475"></p>
+<p><img src="/.%5CImage%5Cimage-20230401232724925.png" alt="image-20230401232724925"></p>
+<p><img src="/.%5CImage%5Cimage-20230401232832335.png" alt="image-20230401232832335"></p>
+<p><img src="/.%5CImage%5Cimage-20230401232912954.png" alt="image-20230401232912954"></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                    <p class="copyright-item">
+                        <span>Author:</span>
+                        <span>KeleLiu</span>
+                    </p>
+                
+                
+                
+                    <p class="copyright-item">
+                        <span>License:</span>
+                        <span>Copyright (c) 2019 <a target="_blank" rel="noopener" href="http://creativecommons.org/licenses/by-nc/4.0/">CC-BY-NC-4.0</a> LICENSE</span>
+                    </p>
+                
+                
+
+            </section>
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="/tags/C-ROS/"># C++, ROS</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/03/06/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95---%E4%B8%83.%E5%9B%9E%E6%BA%AF/">代码随想录---七.回溯</a>
+            
+            
+            <a class="next" rel="next" href="/2023/03/06/%E4%BB%A3%E7%A0%81%E9%9A%8F%E6%83%B3%E5%BD%95---%E4%B9%9D.%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">代码随想录---九.动态规划</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© KeleLiu | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
